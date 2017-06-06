@@ -96,15 +96,16 @@ class Project {
      */
     fetchIssues(body, pullRequestNumber) {
         const issues = [];
+        const { issueParser } = PullRequest;
         let result;
 
-        while ((result = PullRequest.issueParser.exec(body)) !== null) {
+        while ((result = issueParser.exec(body)) !== null) {
             const number = parseInt(result[2], 10);
 
             if (this.issues.has(number)) {
                 issues.push(this.issues.get(number));
             } else {
-                //console.error(`Issue #${number} not found for PR #${pullRequestNumber}`);
+                console.error(`Issue #${number} not found for PR #${pullRequestNumber}`);
             }
         }
 

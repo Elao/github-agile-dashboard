@@ -10,9 +10,9 @@ class GithubAgileDashboard {
      */
     constructor(owner, repo, username, password) {
         this.cli = new CLI('📉  GAD> ');
+        this.loader = new HttpLoader(this.setProject.bind(this), owner, repo, username, password);
         this.project = null;
 
-        this.setProject = this.setProject.bind(this);
         this.helpCommand = this.helpCommand.bind(this);
         this.statusCommand = this.statusCommand.bind(this);
         this.sprintCommand = this.sprintCommand.bind(this);
@@ -25,10 +25,7 @@ class GithubAgileDashboard {
         this.cli.on('sprints', this.sprintsCommand);
         this.cli.on('backlog', this.backlogCommand);
         this.cli.on('unknown', this.helpCommand);
-
-        this.cli.write(`⏳  Fetching issues...`);
-
-        new HttpLoader(this.setProject, owner, repo, username, password);
+        this.cli.on('reset', this.loader.load);
     }
 
     setProject(project) {

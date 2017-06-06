@@ -1,5 +1,3 @@
-const issueParser = new RegExp('(fixes|fixe|fix|close|closes) #(\\d+)', 'gi');
-
 class PullRequest {
     /**
      * Create from GitHub API data
@@ -12,7 +10,14 @@ class PullRequest {
         return new this(parseInt(id, 10), parseInt(number, 10), title, state, user, labels, issues, new Date(created_at));
     }
 
-    static get issueParser() { return issueParser; }
+    /**
+     * Issue parser(extract issues number)
+     *
+     * @return {RegExp}
+     */
+    static get issueParser() {
+        return new RegExp('(fixes|fixe|fix|close|closes) #(\\d+)', 'gi');
+    }
 
     /**
      * @param {Number} id

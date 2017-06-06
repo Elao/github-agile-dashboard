@@ -22,14 +22,16 @@ class HttpLoader {
             new GitHubApi({
                 headers: { 'user-agent': 'GitHub-Agile-Dashboard' },
                 validateCache: true,
-                timeout: 10000,
+                timeout: 5000,
                 //followRedirects: false, // default: true; there's currently an issue with non-get redirects, so allow ability to disable follow-redirects
             }),
             {
                 prefix: `${owner}/${repo}`,
+                //cachedb: 'redis://',
             }
         );
 
+        this.load = this.load.bind(this);
         this.onIssues = this.onIssues.bind(this);
 
         this.load();
@@ -50,6 +52,8 @@ class HttpLoader {
     }
 
     load(state = 'all', per_page = 100, since = HttpLoader.date(-365)) {
+        console.info(`⏳  Fetching issues...`);
+
         const { owner, repo } = this;
         const options = { owner, repo, state, per_page };
 

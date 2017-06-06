@@ -1,5 +1,3 @@
-const titleParser = new RegExp('(.+)\\[([\\d\\.,]+)\\](.*)', 'gi');
-
 class Issue {
     /**
      * Create from GitHub API data
@@ -21,19 +19,26 @@ class Issue {
      * @return {Object}
      */
     static parseTitle(title) {
-        const result = Issue.titleParser.exec(title);
+        const result = this.titleParser.exec(title);
 
         if (!result) {
             return { title, points: 0 };
         }
 
         return {
-            title: result[1] + result[1],
+            title: result[1] + result[3],
             points: parseFloat(result[2].replace(',', '.')),
         };
     }
 
-    static get titleParser() { return titleParser; }
+    /**
+     * Title parser (extract points value)
+     *
+     * @return {RegExp}
+     */
+    static get titleParser() {
+        return new RegExp('(.*)\\[([\\d\\.\\,]+)\\](.*)', 'gi');
+    }
 
     constructor(id, number, title, points, state, labels, milestone, createdAt) {
         this.id = id;
@@ -56,11 +61,15 @@ class Issue {
     }
 
     get status() {
+        if (this.state === 'closed') {
+            return 'done';
+        }
+
         if (this.pullRequest) {
             return this.pullRequest.status;
         }
 
-        return this.state === 'open' ? 'todo' : 'done';
+        return 'todo';
     }
 }
 
