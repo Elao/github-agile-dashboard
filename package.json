@@ -10,13 +10,18 @@
   ],
   "license": "MIT",
   "author": "Thomas Jarrand <thomas.jarrand@gmail.com> (http://thomas.jarrand.fr)",
+  "preferGlobal": true,
   "main": "index.js",
+  "bin": {
+    "gad": "./index.js"
+  },
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "github": "^9.2.0",
-    "github-cache": "^2.1.0"
+    "github-cache": "^2.1.0",
+    "minimist": "^1.2.0"
   }
 }
