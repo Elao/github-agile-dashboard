@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const stdout = require('child_process').execSync('git -C . config --get remote.origin.url').toString();
 const result = new RegExp('git@github.com:(.+)\\/(.+)\\.git', 'ig').exec(stdout);
 const { owner, repo, user, password } = require('minimist')(process.argv.slice(2), {
