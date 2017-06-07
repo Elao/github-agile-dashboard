@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "github": "^9.2.0",
-    "github-cache": "^2.1.0"
+    "github-cache": "^2.1.0",
+    "minimist": "^1.2.0"
   }
 }
