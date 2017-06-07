@@ -1,5 +1,6 @@
 const CLI = require('./CLI');
 const HttpLoader = require('./Loader/HttpLoader');
+const FileLoader = require('./Loader/FileLoader');
 
 class GithubAgileDashboard {
     /**
@@ -12,6 +13,7 @@ class GithubAgileDashboard {
     constructor(owner, repo, username, password, commands = ['status']) {
         this.cli = new CLI('gad> ', commands);
         this.loader = new HttpLoader(this.setProject.bind(this), owner, repo, username, password);
+        //this.loader = new FileLoader(this.setProject.bind(this));
         this.project = null;
 
         this.helpCommand = this.helpCommand.bind(this);
@@ -19,6 +21,8 @@ class GithubAgileDashboard {
         this.sprintCommand = this.sprintCommand.bind(this);
         this.sprintsCommand = this.sprintsCommand.bind(this);
         this.backlogCommand = this.backlogCommand.bind(this);
+
+        this.loader.load();
     }
 
     onInit() {
