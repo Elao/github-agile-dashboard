@@ -7,9 +7,10 @@ class GithubAgileDashboard {
      * @param {String} repo
      * @param {String} username
      * @param {String} password
+     * @param {Array} commands
      */
-    constructor(owner, repo, username, password) {
-        this.cli = new CLI('📉  GAD> ');
+    constructor(owner, repo, username, password, commands = ['status']) {
+        this.cli = new CLI('gad> ', commands);
         this.loader = new HttpLoader(this.setProject.bind(this), owner, repo, username, password);
         this.project = null;
 
@@ -18,19 +19,25 @@ class GithubAgileDashboard {
         this.sprintCommand = this.sprintCommand.bind(this);
         this.sprintsCommand = this.sprintsCommand.bind(this);
         this.backlogCommand = this.backlogCommand.bind(this);
+    }
 
-        this.cli.on('help', this.helpCommand);
-        this.cli.on('status', this.statusCommand);
-        this.cli.on('sprint', this.sprintCommand);
-        this.cli.on('sprints', this.sprintsCommand);
-        this.cli.on('backlog', this.backlogCommand);
-        this.cli.on('unknown', this.helpCommand);
-        this.cli.on('reset', this.loader.load);
+    onInit() {
+        if (!this.cli.ready) {
+            this.cli.on('help', this.helpCommand);
+            this.cli.on('status', this.statusCommand);
+            this.cli.on('sprint', this.sprintCommand);
+            this.cli.on('sprints', this.sprintsCommand);
+            this.cli.on('backlog', this.backlogCommand);
+            this.cli.on('unknown', this.helpCommand);
+            this.cli.on('reset', this.loader.load);
+            this.cli.setReady();
+        }
     }
 
     setProject(project) {
         this.project = project;
         this.statusCommand();
+        this.onInit();
     }
 
     statusCommand() {

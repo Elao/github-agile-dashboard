@@ -55,5 +55,5 @@ E.g.: `gad -o Elao -r symfony-standard -u Tom32i -p MyGitHubPersonalAccessToken`
 
 ## Usage
 
-    npm start -o [organisation|owner] -r [repo] -u [username] -p [password|token]
+    node gad.js -o [organisation|owner] -r [repo] -u [username] -p [password|token]
 

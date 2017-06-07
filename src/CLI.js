@@ -3,27 +3,31 @@ const Readline = require('readline');
 
 class CLI extends EventEmitter {
     /**
-     * Reserver commands
+     * Reserved commands
      */
     static get RESERVED() { return ['unknown']; }
 
     /**
      * @param {String} prompt
+     * @param {Array} commandStack command stack
      */
-    constructor(prompt = '') {
+    constructor(prompt = '', commandStack = []) {
         super();
 
         const { stdin, stdout } = process;
 
         this.commands = new Set();
         this.readline = Readline.createInterface({ input: stdin, output: stdout, prompt });
+        this.commandStack = commandStack;
+        this.ready = false;
 
         this.onClose = this.onClose.bind(this);
         this.onLine = this.onLine.bind(this);
+        this.onLineStack = this.onLineStack.bind(this);
         this.close = this.close.bind(this);
 
         this.readline.on('close', this.onClose);
-        this.readline.on('line', this.onLine);
+        this.readline.on('line', this.onLineStack);
 
         this.on('exit', this.close);
     }
@@ -39,6 +43,24 @@ class CLI extends EventEmitter {
 
         if (CLI.RESERVED.indexOf(name) < 0) {
             this.commands.add(name);
+        }
+    }
+
+    /**
+     * Mark as ready
+     */
+    setReady() {
+        if (!this.ready) {
+            this.ready = true;
+
+            this.readline.removeListener('line', this.onLineStack);
+            this.readline.on('line', this.onLine);
+
+            let line;
+
+            while (line = this.commandStack.shift()) {
+                this.readline.write(`${line}\r\n`);
+            }
         }
     }
 
@@ -63,7 +85,6 @@ class CLI extends EventEmitter {
      * Close the CLI
      */
     close() {
-        //this.write('\r\n');
         process.exit(0);
     }
 
@@ -80,6 +101,15 @@ class CLI extends EventEmitter {
         }
 
         return 'unknown';
+    }
+
+    /**
+     * Stack commands that occur before ready
+     *
+     * @param {String} line
+     */
+    onLineStack(line) {
+        this.commandStack.push(line);
     }
 
     /**

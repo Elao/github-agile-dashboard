@@ -11,12 +11,11 @@
   "license": "MIT",
   "author": "Thomas Jarrand <thomas.jarrand@gmail.com> (http://thomas.jarrand.fr)",
   "preferGlobal": true,
-  "main": "index.js",
+  "main": "src/GithubAgileDashboard.js",
   "bin": {
-    "gad": "./index.js"
+    "gad": "./gad.js"
   },
   "scripts": {
-    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
