@@ -4,7 +4,7 @@
 
 ## Installation
 
-    npm install -g git+https://github.com/Elao/github-agile-dashboard.git
+    npm install -g @elao/github-agile-dashboard
 
 ## Configuration
 
