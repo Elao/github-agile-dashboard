@@ -11,7 +11,7 @@ class Project {
         this.issues = new Map();
         this.pullRequests = new Map();
         this.labels = new Map();
-        this.milestones = new Map();
+        this.milestones = [];
 
         this.fetchLabel = this.fetchLabel.bind(this);
         this.fetchMilestone = this.fetchMilestone.bind(this);
@@ -29,8 +29,7 @@ class Project {
      * @return {Milestone}
      */
     getCurrentMilestone(date = Date.now()) {
-        return Array.from(this.milestones.values())
-            .find(milestone => milestone.isCurrent(date));
+        return this.getSprints().find(milestone => milestone.isCurrent(date));
     }
 
     /**
@@ -39,7 +38,7 @@ class Project {
      * @return {Milestone[]}
      */
     getSprints() {
-        return Array.from(this.milestones.values()).filter(milestone => !milestone.isBacklog());
+        return this.milestones.sort(Milestone.sort).filter(milestone => !milestone.isBacklog());
     }
 
     /**
@@ -48,7 +47,7 @@ class Project {
      * @return {Milestone[]}
      */
     getBacklogs() {
-        return Array.from(this.milestones.values()).filter(milestone => milestone.isBacklog());
+        return this.milestones.filter(milestone => milestone.isBacklog());
     }
 
     /**
@@ -59,6 +58,7 @@ class Project {
     load(issues) {
         issues.filter(data => typeof data.pull_request === 'undefined').forEach(this.loadIssue);
         issues.filter(data => typeof data.pull_request !== 'undefined').forEach(this.loadPullRequest);
+        this.getSprints().forEach((milestone, index, sprints) => milestone.previous = sprints[index - 1] || null);
     }
 
     /**
@@ -125,12 +125,14 @@ class Project {
         }
 
         const { id } = data;
+        let milestone = this.milestones.find(milestone => id === milestone.id);
 
-        if (!this.milestones.has(id)) {
-            this.milestones.set(id, Milestone.create(data));
+        if (!milestone) {
+            milestone = Milestone.create(data);
+            this.milestones.push(milestone);
         }
 
-        return this.milestones.get(id);
+        return milestone;
     }
 
     /**

@@ -5,18 +5,17 @@ class FileLoader {
     constructor(callback, path = './cache') {
         this.callback = callback;
         this.path = path;
-        this.page = 0;
         this.data = [];
 
-        this.load();
+        this.load = this.load.bind(this);
     }
 
     load() {
         let filename;
+        let page = 1;
 
-        while ((filename = `${this.path}/issues.${this.page++}.json`) && (fs.existsSync(filename))) {
-            const response = JSON.parse(fs.readFileSync(filename));
-            this.data = this.data.concat(response.data);
+        while ((filename = `${this.path}/issues.${page++}.json`) && (fs.existsSync(filename))) {
+            this.data = this.data.concat(JSON.parse(fs.readFileSync(filename)).data);
         }
 
         this.callback(new Project(this.data));

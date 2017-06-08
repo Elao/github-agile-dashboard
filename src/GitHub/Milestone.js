@@ -1,4 +1,6 @@
 const Issue = require('./Issue');
+const DateUtil = require('../Util/DateUtil');
+const BurnDownChart = require('../Display/BurnDownChart');
 
 class Milestone {
     /**
@@ -9,7 +11,19 @@ class Milestone {
     static create(data) {
         const { id, title, description, state, created_at, due_on } = data;
 
-        return new this(parseInt(id, 10), title, description, state, new Date(created_at), due_on ? new Date(due_on) : null);
+        return new this(parseInt(id, 10), title, description, state, DateUtil.day(created_at), due_on ? DateUtil.day(due_on) : null);
+    }
+
+    static sort(a, b) {
+        if (a.dueOn < b.dueOn) {
+            return -1;
+        }
+
+        if (a.dueOn > b.dueOn) {
+            return 1;
+        }
+
+        return 0;
     }
 
     /**
@@ -29,6 +43,7 @@ class Milestone {
         this.dueOn = dueOn;
         this.issues = [];
         this.pullRequests = [];
+        this.previous = null;
     }
 
     get length() {
@@ -59,6 +74,18 @@ class Milestone {
         return this.done / this.points;
     }
 
+    get startAt() {
+        return this.previous ? this.previous.dueOn : this.createdAt;
+    }
+
+    get days() {
+        return Math.abs(Math.ceil((this.dueOn - this.startAt) / (1000 * 60 * 60 * 24)));
+    }
+
+    getTodoAt(date) {
+        return this.issues.filter(issue => !issue.closedAt || issue.closedAt > date).reduce(Issue.sum, 0);
+    }
+
     /**
      * Does this Milestone correspond to the current sprint?
      *
@@ -87,7 +114,7 @@ class Milestone {
      * @return {String}
      */
     display() {
-        return this.isBacklog() ? this.displayBacklog() : this.displaySprint();
+        return this.isBacklog() ? this.displayBacklog() : `${this.displaySprint()}\r\n\r\n${this.displayChart()}`;
     }
 
     /**
@@ -96,9 +123,9 @@ class Milestone {
      * @return {String}
      */
     displaySprint() {
-        const { title, length, done, todo, inProgress, readyToReview, progress } = this;
+        const { title, length, done, todo, inProgress, readyToReview, progress, points } = this;
 
-        return `${title}  ・ 📉  ${(progress * 100).toFixed(2)}% ・ 📫  ${todo}pts ・ 🚧  ${inProgress}pts ・ 🔍  ${readyToReview}pts ・ ✅  ${done}pts ・  (${length} stories)`;
+        return `${title}  ・ 📉  ${(progress * 100).toFixed(2)}% ・ 📫  ${todo}pts ・ 🚧  ${inProgress}pts ・ 🔍  ${readyToReview}pts ・ ✅  ${done}pts ・  (${length} stories ・ ${points}pts)`;
     }
 
     /**
@@ -110,6 +137,10 @@ class Milestone {
         const { title, length, points } = this;
 
         return `${title}  ・ 📇  ${length} stories ・ ${points} points`;
+    }
+
+    displayChart() {
+        return new BurnDownChart(this).display();
     }
 }
 

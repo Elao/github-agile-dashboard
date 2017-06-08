@@ -1,3 +1,5 @@
+const DateUtil = require('../Util/DateUtil');
+
 class Issue {
     /**
      * Create from GitHub API data
@@ -5,10 +7,10 @@ class Issue {
      * @param {Object} data
      */
     static create(data) {
-        const { id, number, state, labels, milestone, created_at } = data;
+        const { id, number, state, labels, milestone, created_at, closed_at } = data;
         const { title, points } = this.parseTitle(data.title);
 
-        return new this(parseInt(id, 10), parseInt(number, 10), title, points, state, labels, milestone, new Date(created_at));
+        return new this(parseInt(id, 10), parseInt(number, 10), title, points, state, labels, milestone, new Date(created_at), closed_at ? DateUtil.day(closed_at) : null);
     }
 
     /**
@@ -40,7 +42,7 @@ class Issue {
         return new RegExp('(.*)\\[([\\d\\.\\,]+)\\](.*)', 'gi');
     }
 
-    constructor(id, number, title, points, state, labels, milestone, createdAt) {
+    constructor(id, number, title, points, state, labels, milestone, createdAt, closedAt) {
         this.id = id;
         this.number = number;
         this.title = title;
@@ -49,6 +51,7 @@ class Issue {
         this.labels = labels;
         this.milestone = milestone;
         this.createdAt = createdAt;
+        this.closedAt = closedAt;
         this.pullRequest = null;
 
         if (this.milestone) {

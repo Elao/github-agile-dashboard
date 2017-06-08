@@ -1,3 +1,5 @@
+const DateUtil = require('../Util/DateUtil');
+
 class PullRequest {
     /**
      * Create from GitHub API data
@@ -7,7 +9,7 @@ class PullRequest {
     static create(data) {
         const { id, number, title, state, user, labels, issues, created_at } = data;
 
-        return new this(parseInt(id, 10), parseInt(number, 10), title, state, user, labels, issues, new Date(created_at));
+        return new this(parseInt(id, 10), parseInt(number, 10), title, state, user, labels, issues, DateUtil.day(new Date(created_at)));
     }
 
     /**
