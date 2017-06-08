@@ -1,6 +1,6 @@
 const CLI = require('./CLI');
+const Project = require('./GitHub/Project');
 const HttpLoader = require('./Loader/HttpLoader');
-const FileLoader = require('./Loader/FileLoader');
 
 class GithubAgileDashboard {
     /**
@@ -8,12 +8,12 @@ class GithubAgileDashboard {
      * @param {String} repo
      * @param {String} username
      * @param {String} password
+     * @param {String} cacheDir
      * @param {Array} commands
      */
-    constructor(owner, repo, username, password, commands = ['status']) {
+    constructor(owner, repo, username, password, cacheDir, commands = ['status']) {
         this.cli = new CLI('gad> ', commands);
-        this.loader = new HttpLoader(this.setProject.bind(this), owner, repo, username, password);
-        //this.loader = new FileLoader(this.setProject.bind(this));
+        this.loader = new HttpLoader(this.setProject.bind(this), owner, repo, username, password, cacheDir);
         this.project = null;
 
         this.helpCommand = this.helpCommand.bind(this);
@@ -25,6 +25,9 @@ class GithubAgileDashboard {
         this.loader.load();
     }
 
+    /**
+     * Init CLI (if not already done)
+     */
     onInit() {
         if (!this.cli.ready) {
             this.cli.on('help', this.helpCommand);
@@ -38,8 +41,13 @@ class GithubAgileDashboard {
         }
     }
 
-    setProject(project) {
-        this.project = project;
+    /**
+     * Load projet from data
+     *
+     * @param {Array} data
+     */
+    setProject(data) {
+        this.project = new Project(data);
         this.statusCommand();
         this.onInit();
     }
