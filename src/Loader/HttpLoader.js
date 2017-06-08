@@ -1,6 +1,5 @@
-const fs = require('fs');
 const GitHubApi = require('github');
-const Project = require('../GitHub/Project');
+const Cache = require('./Cache');
 
 class HttpLoader {
     /**
@@ -9,16 +8,15 @@ class HttpLoader {
      * @param {String} repo
      * @param {String} username
      * @param {String} password
+     * @param {String} cacheDir
      */
-    constructor(callback, owner, repo, username, password, cache = './cache') {
+    constructor(callback, owner, repo, username, password, cacheDir) {
         this.callback = callback;
         this.owner = owner;
         this.repo = repo;
-        this.username = username;
-        this.password = password;
-        this.cache = cache;
-        this.page = 0;
+        this.credentials = { type: 'basic', username, password };
         this.data = [];
+        this.cache = new Cache(owner, repo, cacheDir);
         this.api = new GitHubApi({
             headers: { 'user-agent': 'GitHub-Agile-Dashboard' },
             timeout: 5000,
@@ -26,25 +24,28 @@ class HttpLoader {
         });
 
         this.load = this.load.bind(this);
+        this.addIssue = this.addIssue.bind(this);
         this.onIssues = this.onIssues.bind(this);
     }
 
-    static date(days = 0) {
-        const date = new Date();
-
-        date.setDate(date.getDate() + days);
-
-        return date;
-    }
-
+    /**
+     * Authenticate against GitHub API
+     */
     authenticate() {
-        const { username, password } = this;
-
-        this.api.authenticate({ type: 'basic', username, password });
+        this.api.authenticate(this.credentials);
     }
 
-    load(state = 'all', per_page = 100, since = HttpLoader.date(-365)) {
+    /**
+     * Load data
+     *
+     * @param {String} state
+     * @param {Number} per_page
+     * @param {Date} since
+     */
+    load(state = 'all', per_page = 100, since = this.cache.lastModified) {
         console.info(`⏳  Fetching issues...`);
+
+        this.data = this.cache.load();
 
         const { owner, repo } = this;
         const options = { owner, repo, state, per_page };
@@ -54,20 +55,21 @@ class HttpLoader {
         }
 
         this.authenticate();
-        this.page = 0;
         this.api.issues.getForRepo(options, this.onIssues);
     }
 
+    /**
+     * On issues received
+     *
+     * @param {Error} error
+     * @param {Response} response
+     */
     onIssues(error, response) {
         if (error) {
             return console.error(error);
         }
 
-        if (this.cache) {
-            fs.writeFileSync(`${this.cache}/issues.${this.getPage(response)}.json`, JSON.stringify(response, undefined, 2));
-        }
-
-        this.data = this.data.concat(response.data);
+        response.data.forEach(this.addIssue);
 
         if (this.api.hasNextPage(response)) {
             this.api.getNextPage(response, this.onIssues);
@@ -76,14 +78,27 @@ class HttpLoader {
         }
     }
 
-    getPage(response) {
-        const result = new RegExp('(\\&|\\?)page=(\\d+)', 'gi').exec(response.meta.link);
+    /**
+     * Add an issue to the list
+     *
+     * @param {Object} data
+     */
+    addIssue(data) {
+        const index = this.data.findIndex(issue => issue.id === data.id);
 
-        return result ? result[2] : 1;
+        if (index === -1) {
+            this.data.push(data);
+        } else {
+            this.data[index] = data;
+        }
     }
 
+    /**
+     * Callback when done
+     */
     resolve() {
-        this.callback(new Project(this.data));
+        this.cache.save(this.data);
+        this.callback(this.data);
     }
 }
 
