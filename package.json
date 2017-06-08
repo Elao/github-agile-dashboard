@@ -1,20 +1,21 @@
 {
-  "name": "github-agile-dashboard",
-  "version": "0.1.0",
+  "name": "@elao/github-agile-dashboard",
+  "version": "1.0.0",
   "description": "Github Agile Dashboard",
-  "keywords": [
-    "GitHub",
-    "Agile",
-    "Dashboard",
-    "Scrum"
-  ],
+  "keywords": ["GitHub", "Agile", "Dashboard", "Scrum", "Burndown"],
   "license": "MIT",
   "author": "Thomas Jarrand <thomas.jarrand@gmail.com> (http://thomas.jarrand.fr)",
   "preferGlobal": true,
   "main": "src/GithubAgileDashboard.js",
-  "bin": {
-    "gad": "./gad.js"
+  "bin": { "gad": "./gad.js" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Elao/github-agile-dashboard.git"
   },
+  "bugs": {
+    "url": "https://github.com/Elao/github-agile-dashboard/issues"
+  },
+  "homepage": "https://github.com/Elao/github-agile-dashboard#readme",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
