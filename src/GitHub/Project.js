@@ -2,6 +2,7 @@ const Issue = require('./Issue');
 const PullRequest = require('./PullRequest');
 const Milestone = require('./Milestone');
 const Label = require('./Label');
+const Review = require('./Review');
 
 class Project {
     /**
@@ -51,6 +52,18 @@ class Project {
     }
 
     /**
+     * Get Pull Requests that are awiating review from the given user
+     *
+     * @param {String} user
+     *
+     * @return {Array}
+     */
+    getPullRequestsAwaitingReview(user) {
+        return Array.from(this.pullRequests.values())
+            .filter(pullRequest => pullRequest.isAwaitingReview(user));
+    }
+
+    /**
      * Load issues and PR from Github API
      *
      * @param {Array} issues
@@ -82,8 +95,9 @@ class Project {
         const milestone = this.fetchMilestone(data.milestone);
         const labels = data.labels.map(this.fetchLabel);
         const issues = this.fetchIssues(data.body, data.number);
+        const reviews = data.reviews ? data.reviews.map(Review.create) : [];
 
-        this.addPullRequest(PullRequest.create(Object.assign(data, { milestone, labels, issues })));
+        this.addPullRequest(PullRequest.create(Object.assign(data, { milestone, labels, issues, reviews })));
     }
 
     /**
@@ -113,7 +127,7 @@ class Project {
     }
 
     /**
-     * Create Milestone for GithubAPI (or return existing Milestone)
+     * Create Milestone from Github API (or return existing Milestone)
      *
      * @param {Object} data
      *
@@ -136,7 +150,7 @@ class Project {
     }
 
     /**
-     * Create Label for GithubAPI (or return existing Label)
+     * Create Label from Github API (or return existing Label)
      *
      * @param {Object} data
      *
@@ -168,6 +182,8 @@ class Project {
      */
     addPullRequest(pullRequest) {
         this.pullRequests.set(pullRequest.number, pullRequest);
+
+        return pullRequest;
     }
 
     /**
