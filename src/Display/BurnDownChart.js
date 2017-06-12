@@ -1,4 +1,5 @@
 const DateUtil = require('../Util/DateUtil');
+const { blue, green, red, cyan, yellow } = require('../Util/colors');
 
 class BurnDownChart {
     /**
@@ -41,6 +42,7 @@ class BurnDownChart {
         const burnDown = this.getBurnDown(this.milestone);
         const labelLength = Array.from(burnDown.keys()).reduce((max, label) => Math.max(label.length, max), 0);
         const maxPoints = Math.ceil(this.milestone.points);
+        const pointsPerDay = maxPoints / burnDown.size;
         const lines = [
            gutter('', ' ', labelLength - 1) + (new Array(maxPoints + 1).fill(' ').map((value, index) => gutter(index)).join('')),
            gutter('', ' ', labelLength) + ' ╔╧' + gutter('╧', '═').repeat(maxPoints)
@@ -52,8 +54,11 @@ class BurnDownChart {
             const showLabel = index % 2 === 0;
             const label = gutter(showLabel ? day : '', ' ', labelLength);
             const border = showLabel ? '╢' : '║';
-            const content = '🀫'.repeat(dayWidth * points);
-            const note = points && lastPoints !== points ? ' '.repeat(dayWidth * (this.milestone.points - points)) + ' ‣ ' + points.toString() : '';
+            const objectif = Math.round(maxPoints - index * pointsPerDay);
+            const good = Math.min(points, objectif);
+            const missing = points - good;
+            const content = green('🀫'.repeat(dayWidth * good)) + red('🀫'.repeat(dayWidth * missing));
+            const note = points && lastPoints !== points ? ' ‣ ' + yellow(points.toString()) : '';
             lastPoints = points;
             lines.push(label + ' ' + border + content + note);
         });

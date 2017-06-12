@@ -24,6 +24,7 @@ class HttpLoader {
         });
 
         this.load = this.load.bind(this);
+        this.reset = this.reset.bind(this);
         this.addIssue = this.addIssue.bind(this);
         this.onIssues = this.onIssues.bind(this);
     }
@@ -86,6 +87,16 @@ class HttpLoader {
     addIssue(data) {
         const index = this.data.findIndex(issue => issue.id === data.id);
 
+        if (typeof data.pull_request !== 'undefined' && data.state === 'open') {
+            const { repo, owner } = this;
+            const { id, number } = data;
+
+            this.api.pullRequests.getReviews(
+                { owner, repo, number, id },
+                (error, response) => data.reviews = response.data
+            );
+        }
+
         if (index === -1) {
             this.data.push(data);
         } else {
@@ -99,6 +110,14 @@ class HttpLoader {
     resolve() {
         this.cache.save(this.data);
         this.callback(this.data);
+    }
+
+    /**
+     * Clear cache and re-load data
+     */
+    reset() {
+        this.cache.clear();
+        this.load();
     }
 }
 

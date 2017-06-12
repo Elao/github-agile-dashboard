@@ -55,6 +55,13 @@ class Cache {
     }
 
     /**
+     * Clear cache
+     */
+    clear() {
+        fs.unlinkSync(this.path);
+    }
+
+    /**
      * Ensure directory exists (create it if not)
      *
      * @param {String} fullPath

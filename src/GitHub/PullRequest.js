@@ -1,4 +1,5 @@
 const DateUtil = require('../Util/DateUtil');
+const { cyan, yellow } = require('../Util/colors');
 
 class PullRequest {
     /**
@@ -7,9 +8,19 @@ class PullRequest {
      * @param {Object} data
      */
     static create(data) {
-        const { id, number, title, state, user, labels, issues, created_at } = data;
+        const { id, number, title, state, user, labels, issues, reviews, created_at } = data;
 
-        return new this(parseInt(id, 10), parseInt(number, 10), title, state, user, labels, issues, DateUtil.day(new Date(created_at)));
+        return new this(
+            parseInt(id, 10),
+            parseInt(number, 10),
+            title,
+            state,
+            user.login,
+            labels,
+            issues,
+            reviews,
+            DateUtil.day(new Date(created_at))
+        );
     }
 
     /**
@@ -31,7 +42,7 @@ class PullRequest {
      * @param {Array} issues
      * @param {Date} createdAt
      */
-    constructor(id, number, title, state, user, labels, issues = [], createdAt) {
+    constructor(id, number, title, state, user, labels, issues = [], reviews = [], createdAt) {
         this.id = id;
         this.number = number;
         this.title = title;
@@ -39,6 +50,7 @@ class PullRequest {
         this.user = user;
         this.labels = labels;
         this.issues = issues;
+        this.reviews = reviews;
         this.createdAt = createdAt;
 
         if (this.issues) {
@@ -51,15 +63,53 @@ class PullRequest {
     }
 
     get status() {
-        if (this.labels.find(label => label.status === 'in-progress')) {
+        if (this.labels.some(label => label.status === 'in-progress')) {
             return 'in-progress';
         }
 
-        if (this.labels.find(label => label.status === 'ready-to-review')) {
+        if (this.labels.some(label => label.status === 'ready-to-review')) {
             return 'ready-to-review';
         }
 
-        return 'in-progress';
+        return this.state === 'open' ? 'in-progress' : 'done';
+    }
+
+    /**
+     * Display the Pull Request
+     *
+     * @return {String}
+     */
+    display() {
+        const { number, title, user } = this;
+
+        return `${cyan(number)} by ${yellow(user)} "${title}"`;
+    }
+
+    /**
+     * Is this pull request awaiting review from the given user?
+     *
+     * @param {String} user
+     *
+     * @return {Boolean}
+     */
+    isAwaitingReview(user) {
+        // Merged
+        if (this.state === 'closed') {
+            return false;
+        }
+
+        // Not ready to review yet
+        if (!this.labels.some(label => label.status === 'ready-to-review')) {
+            return false;
+        }
+
+        // Submitted by the user
+        if (this.user === user) {
+            return false;
+        }
+
+        // Not reviewed yet by the user
+        return !this.reviews.some(review => review.user === user);
     }
 }
 
