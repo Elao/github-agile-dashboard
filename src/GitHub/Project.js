@@ -52,7 +52,7 @@ class Project {
     }
 
     /**
-     * Get Pull Requests that are awiating review from the given user
+     * Get Pull Requests that are awaiting review from the given user
      *
      * @param {String} user
      *

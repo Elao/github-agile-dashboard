@@ -1,4 +1,5 @@
 const DateUtil = require('../Util/DateUtil');
+const { cyan, yellow } = require('../Util/colors');
 
 class PullRequest {
     /**
@@ -81,7 +82,7 @@ class PullRequest {
     display() {
         const { number, title, user } = this;
 
-        return `#${number} "${title}" by ${user}`;
+        return `${cyan(number)} by ${yellow(user)} "${title}"`;
     }
 
     /**

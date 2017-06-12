@@ -87,7 +87,7 @@ class HttpLoader {
     addIssue(data) {
         const index = this.data.findIndex(issue => issue.id === data.id);
 
-        if (typeof data.pull_request !== 'undefined') {
+        if (typeof data.pull_request !== 'undefined' && data.state === 'open') {
             const { repo, owner } = this;
             const { id, number } = data;
 

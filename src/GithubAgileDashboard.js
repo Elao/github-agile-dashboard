@@ -1,6 +1,7 @@
 const CLI = require('./CLI');
 const Project = require('./GitHub/Project');
 const HttpLoader = require('./Loader/HttpLoader');
+const { green } = require('./Util/colors');
 
 class GithubAgileDashboard {
     /**
@@ -85,7 +86,7 @@ class GithubAgileDashboard {
             return this.cli.result('Nothing to review. Good job! 👍');
         }
 
-        this.cli.result([`🔍  ${length} pull requests awaiting your review:`]
+        this.cli.result([`🔍  ${green(length)} pull requests awaiting your review:`]
             .concat(pullRequests.map(pullRequest => pullRequest.display()))
             .join('\r\n'));
     }
