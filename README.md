@@ -45,6 +45,14 @@ You can manually specify any of the options on the fly:
 
 E.g.: `gad -o Elao -r symfony-standard -u Tom32i -p MyGitHubPersonalAccessToken`
 
+### On Github
+
+    1. Create a milestone "Backlog" (or whatever name) with no due date : it will be your backlog.
+    2. Create a milestone per Sprint with a due date.
+    3. Create two labels "Ready to review" and "In Progress".
+    4. Create issues in milestone "Backlog".
+    5. Add an estimation `[x]` in the issue title, for example: "Add a user login [3]".
+    6. Create Pull Request in sprint milestone with tag "Ready to review" or "In Progress".
 
 # Contributing
 
