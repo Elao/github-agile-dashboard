@@ -7,7 +7,7 @@ class Review {
     static create(data) {
         const { id, user, state } = data;
 
-        return new Review(parseInt(id, 10), user.name, state.toLowerCase());
+        return new Review(parseInt(id, 10), user.login, state.toLowerCase());
     }
 
     /**

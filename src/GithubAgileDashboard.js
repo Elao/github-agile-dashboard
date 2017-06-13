@@ -14,8 +14,8 @@ class GithubAgileDashboard {
      */
     constructor(owner, repo, username, password, cacheDir, commands = ['status']) {
         this.cli = new CLI('gad> ', commands);
-        this.loader = new HttpLoader(this.setProject.bind(this), owner, repo, username, password, cacheDir);
-        this.user = username;
+        this.loader = new HttpLoader(this.setProject.bind(this), owner, repo, username.trim(), password, cacheDir);
+        this.user = username.trim();
         this.project = null;
 
         this.helpCommand = this.helpCommand.bind(this);
@@ -40,6 +40,7 @@ class GithubAgileDashboard {
             this.cli.on('backlog', this.backlogCommand);
             this.cli.on('review', this.reviewCommand);
             this.cli.on('unknown', this.helpCommand);
+            this.cli.on('refresh', this.loader.load);
             this.cli.on('reset', this.loader.reset);
             this.cli.setReady();
         }

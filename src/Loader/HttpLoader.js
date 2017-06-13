@@ -86,15 +86,10 @@ class HttpLoader {
      */
     addIssue(data) {
         const index = this.data.findIndex(issue => issue.id === data.id);
+        const { pull_request, state } = data;
 
-        if (typeof data.pull_request !== 'undefined' && data.state === 'open') {
-            const { repo, owner } = this;
-            const { id, number } = data;
-
-            this.api.pullRequests.getReviews(
-                { owner, repo, number, id },
-                (error, response) => data.reviews = response.data
-            );
+        if (typeof pull_request !== 'undefined' && state === 'open') {
+            this.fetchReviews(data);
         }
 
         if (index === -1) {
@@ -102,6 +97,25 @@ class HttpLoader {
         } else {
             this.data[index] = data;
         }
+    }
+
+    /**
+     * Fetch reviews for PR
+     *
+     * @param {Object} data
+     */
+    fetchReviews(data) {
+        const { repo, owner } = this;
+        const { id, number } = data;
+
+        this.api.pullRequests.getReviews(
+            { owner, repo, number, id },
+            (error, response) => {
+                if (!error) {
+                    data.reviews = response.data;
+                }
+            }
+        );
     }
 
     /**
