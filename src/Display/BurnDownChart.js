@@ -54,8 +54,8 @@ class BurnDownChart {
             const showLabel = index % 2 === 0;
             const label = gutter(showLabel ? day : '', ' ', labelLength);
             const border = showLabel ? '╢' : '║';
-            const objectif = Math.round(maxPoints - index * pointsPerDay);
-            const good = Math.min(points, objectif);
+            const goal = Math.round(maxPoints - (index + 1) * pointsPerDay);
+            const good = Math.min(points, goal);
             const missing = points - good;
             const content = green('🀫'.repeat(dayWidth * good)) + red('🀫'.repeat(dayWidth * missing));
             const note = points && lastPoints !== points ? ' ‣ ' + yellow(points.toString()) : '';
