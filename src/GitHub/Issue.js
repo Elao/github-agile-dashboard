@@ -10,7 +10,17 @@ class Issue {
         const { id, number, state, labels, milestone, created_at, closed_at } = data;
         const { title, points } = this.parseTitle(data.title);
 
-        return new this(parseInt(id, 10), parseInt(number, 10), title, points, state, labels, milestone, new Date(created_at), closed_at ? DateUtil.day(closed_at) : null);
+        return new this(
+            parseInt(id, 10),
+            parseInt(number, 10),
+            title.trim(),
+            points,
+            state,
+            labels,
+            milestone,
+            new Date(created_at),
+            closed_at ? DateUtil.day(closed_at) : null
+        );
     }
 
     /**
@@ -40,6 +50,22 @@ class Issue {
      */
     static get titleParser() {
         return new RegExp('(.*)\\[([\\d\\.\\,]+)\\](.*)', 'gi');
+    }
+
+    /**
+     * Sort issues by point (heavy top)
+     *
+     * @param {Issue} a
+     * @param {Issue} b
+     *
+     * @return {Number}
+     */
+    static sortByPoint(a, b) {
+        if (a.points === b.points) {
+            return a.createdAt < b.createdAt ? 1 : -1;
+        }
+
+        return a.points < b.points ? 1 : -1;
     }
 
     constructor(id, number, title, points, state, labels, milestone, createdAt, closedAt) {

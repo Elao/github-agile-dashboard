@@ -13,7 +13,7 @@ class PullRequest {
         return new this(
             parseInt(id, 10),
             parseInt(number, 10),
-            title,
+            title.trim(),
             state,
             user.login,
             labels,

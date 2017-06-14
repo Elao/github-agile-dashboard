@@ -11,7 +11,7 @@ class Milestone {
     static create(data) {
         const { id, title, description, state, created_at, due_on } = data;
 
-        return new this(parseInt(id, 10), title, description, state, DateUtil.day(created_at), due_on ? DateUtil.day(due_on) : null);
+        return new this(parseInt(id, 10), title.trim(), description, state, DateUtil.day(created_at), due_on ? DateUtil.day(due_on) : null);
     }
 
     static sort(a, b) {
@@ -55,19 +55,19 @@ class Milestone {
     }
 
     get done() {
-        return this.issues.filter(issue => issue.status === 'done').reduce(Issue.sum, 0);
+        return this.getIssueByStatus('done').reduce(Issue.sum, 0);
     }
 
     get inProgress() {
-        return this.issues.filter(issue => issue.status === 'in-progress').reduce(Issue.sum, 0);
+        return this.getIssueByStatus('in-progress').reduce(Issue.sum, 0);
     }
 
     get readyToReview() {
-        return this.issues.filter(issue => issue.status === 'ready-to-review').reduce(Issue.sum, 0);
+        return this.getIssueByStatus('ready-to-review').reduce(Issue.sum, 0);
     }
 
     get todo() {
-        return this.issues.filter(issue => issue.status === 'todo').reduce(Issue.sum, 0);
+        return this.getIssueByStatus('todo').reduce(Issue.sum, 0);
     }
 
     get progress() {
@@ -80,6 +80,10 @@ class Milestone {
 
     get days() {
         return Math.abs(Math.ceil((this.dueOn - this.startAt) / (1000 * 60 * 60 * 24)));
+    }
+
+    getIssueByStatus(status) {
+        return this.issues.filter(issue => issue.status === status);
     }
 
     getTodoAt(date) {
@@ -139,9 +143,25 @@ class Milestone {
         return `${title}  ・ 📇  ${length} stories ・ ${points} points`;
     }
 
+    /**
+     * Display the burndown chart
+     *
+     * @return {[type]}
+     */
     displayChart() {
         return new BurnDownChart(this).display();
     }
+
+    /**
+     * Returns a changelog of the sprint
+     *
+     * @return {Array}
+     */
+    displayChangelog() {
+        return ['## Changelog:']
+            .concat(this.issues.sort(Issue.sortByPoint).map(issue => `- ${issue.title}`));
+    }
+
 }
 
 module.exports = Milestone;
