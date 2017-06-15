@@ -8,29 +8,30 @@
 
 ## Configuration
 
-### GitHub Access Token
+### GitHub authentication
 
-[Generate](https://github.com/settings/tokens) a [GitHub personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) with the following access rights: `repo` and `user`.
-Edit your bash file with `sudo vim ~/.bashrc` and export the generated token as below:
+As [recommended by GitHub](https://github.com/blog/180-local-github-config), Gad relies on `github.user` and `github.token` variables in your git config to authenticate you on GitHub API. Follow these three steps and you're good to go:
 
-    export GITHUB_PERSONAL_TOKEN=MyGitHubPersonalAccessToken
+1. Set up your GitHub username in your git config:
 
-### GitHub username
+    `git config --global github.user "Tom32i"`
 
-If not already done, set up your GitHub username in your git config:
+2. [Generate](https://github.com/settings/tokens) a [GitHub personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) with the __following access rights__: `repo` and `user`.
 
-    git config --global github.user "Tom32i"
+3. Set up your GitHub token in your git config:
+
+    `git config --global github.token MyGitHubPersonalAccessToken`
 
 ## Usage
 
 ### Configure your agile project on GitHub
 
-    1. Create a milestone "Backlog" (or whatever name) with no due date : it will be your backlog.
-    2. Create a milestone per Sprint with a due date.
-    3. Create two labels "Ready to review" and "In Progress".
-    4. Create issues in milestone "Backlog".
-    5. Add an estimation `[x]` in the issue title, for example: "Add a user login [3]".
-    6. Create Pull Request in sprint milestone with tag "Ready to review" or "In Progress".
+1. Create a milestone "Backlog" (or whatever name) with no due date : it will be your backlog.
+2. Create a milestone per Sprint with a due date.
+3. Create two labels "Ready to review" and "In Progress".
+4. Create issues in milestone "Backlog".
+5. Add an estimation `[x]` in the issue title, for example: "Add a user login [3]".
+6. Create Pull Request in sprint milestone with tag "Ready to review" or "In Progress".
 
 ### Commands
 
@@ -55,6 +56,14 @@ You can manually specify any of the options on the fly:
     gad -o [organisation|owner] -r [repo] -u [username] -p [password|token]
 
 E.g.: `gad -o Elao -r symfony-standard -u Tom32i -p MyGitHubPersonalAccessToken`
+
+#### Cache
+
+For performance purpose, Gad keeps a little cache file for each repository.
+
+By default, it's located in `~/.gad/cache` but you can specify a different path with the `cacheDir` option:
+
+    gad -c ./cache
 
 # Contributing
 
