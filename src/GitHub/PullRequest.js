@@ -13,7 +13,7 @@ class PullRequest {
         return new this(
             parseInt(id, 10),
             parseInt(number, 10),
-            title,
+            title.trim(),
             state,
             user.login,
             labels,
@@ -39,7 +39,7 @@ class PullRequest {
      * @param {String} state
      * @param {User} user
      * @param {Label[]} labels
-     * @param {Array} issues
+     * @param {Issue[]} issues
      * @param {Date} createdAt
      */
     constructor(id, number, title, state, user, labels, issues = [], reviews = [], createdAt) {

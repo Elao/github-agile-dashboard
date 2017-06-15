@@ -24,6 +24,7 @@ class GithubAgileDashboard {
         this.sprintsCommand = this.sprintsCommand.bind(this);
         this.backlogCommand = this.backlogCommand.bind(this);
         this.reviewCommand = this.reviewCommand.bind(this);
+        this.changelogCommand = this.changelogCommand.bind(this);
 
         this.loader.load();
     }
@@ -39,6 +40,7 @@ class GithubAgileDashboard {
             this.cli.on('sprints', this.sprintsCommand);
             this.cli.on('backlog', this.backlogCommand);
             this.cli.on('review', this.reviewCommand);
+            this.cli.on('changelog', this.changelogCommand);
             this.cli.on('unknown', this.helpCommand);
             this.cli.on('refresh', this.loader.load);
             this.cli.on('reset', this.loader.reset);
@@ -57,28 +59,43 @@ class GithubAgileDashboard {
         this.onInit();
     }
 
+    /**
+     * Show the status of the repository
+     */
     statusCommand() {
         const { pullRequests, issues } = this.project;
 
         this.cli.result(`✅  ${issues.size} issues and ${pullRequests.size} PR fetched.`);
     }
 
+    /**
+     * Show the state of the backlog
+     */
     backlogCommand() {
         const milestones = this.project.getBacklogs();
 
         this.cli.result(milestones.map(milestone => milestone.display()));
     }
 
+    /**
+     * Show the state of the current sprint
+     */
     sprintCommand() {
         this.cli.result(this.project.getCurrentMilestone().display());
     }
 
+    /**
+     * Show the state of all sprints
+     */
     sprintsCommand() {
         const milestones = this.project.getSprints();
 
         this.cli.result(milestones.map(milestone => milestone.display()));
     }
 
+    /**
+     * Display PullRequest that are awaiting your review
+     */
     reviewCommand() {
         const pullRequests = this.project.getPullRequestsAwaitingReview(this.user);
         const { length } = pullRequests;
@@ -92,6 +109,16 @@ class GithubAgileDashboard {
             .join('\r\n'));
     }
 
+    /**
+     * Generate a markdown changelog of the current sprint
+     */
+    changelogCommand() {
+        this.cli.result(this.project.getCurrentMilestone().displayChangelog());
+    }
+
+    /**
+     * Display help
+     */
     helpCommand() {
         this.cli.result(`Available commands: ${Array.from(this.cli.commands).join(', ')}`);
     }

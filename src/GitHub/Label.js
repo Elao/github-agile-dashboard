@@ -7,7 +7,7 @@ class Label {
     static create(data) {
         const { id, name, color } = data;
 
-        return new this(parseInt(id, 10), name, color);
+        return new this(parseInt(id, 10), name.trim(), color);
     }
 
     /**
