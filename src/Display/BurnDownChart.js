@@ -40,7 +40,7 @@ class BurnDownChart {
     display() {
         const { dayWidth, gutter } = this.constructor;
         const burnDown = this.getBurnDown(this.milestone);
-        const labelLength = Array.from(burnDown.keys()).reduce((max, label) => Math.max(label.length, max), 0);
+        const labelLength = Math.max(Array.from(burnDown.keys()).reduce((max, label) => Math.max(label.length, max), 0), 1);
         const maxPoints = Math.ceil(this.milestone.points);
         const pointsPerDay = maxPoints / burnDown.size;
         const lines = [

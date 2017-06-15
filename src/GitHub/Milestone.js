@@ -170,11 +170,15 @@ class Milestone {
     /**
      * Returns a changelog of the sprint
      *
+     * @param {Boolean} all Display all issue (and not just those that are done)
+     *
      * @return {Array}
      */
-    displayChangelog() {
-        return ['## Changelog:'].concat(
-            this.getIssueByStatus('done')
+    displayChangelog(all = false) {
+        const issues = all ? this.issues : this.getIssueByStatus('done');
+
+        return [`# ${this.title}`, '## Changelog '].concat(
+                issues
                 .sort(Issue.sortByPoint)
                 .map(issue => `- ${issue.title}`)
         );

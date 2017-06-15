@@ -1,5 +1,6 @@
 const EventEmitter = require('events');
 const Readline = require('readline');
+const minimist = require('minimist');
 
 class CLI extends EventEmitter {
     /**
@@ -16,7 +17,7 @@ class CLI extends EventEmitter {
 
         const { stdin, stdout } = process;
 
-        this.commands = new Set();
+        this.commands = new Map();
         this.readline = Readline.createInterface({ input: stdin, output: stdout, prompt });
         this.commandStack = commandStack;
         this.ready = false;
@@ -37,13 +38,29 @@ class CLI extends EventEmitter {
      *
      * @param {String} name
      * @param {Function} callback
+     * @param {Object} options
      */
-    on(name, callback) {
+    on(name, callback, options = {}) {
         super.on(name, callback);
 
         if (CLI.RESERVED.indexOf(name) < 0) {
-            this.commands.add(name);
+            this.commands.set(name, { default: options, alias: this.getAlias(options) });
         }
+    }
+
+    /**
+     * Create alias automatically
+     *
+     * @param {Object} options
+     *
+     * @return {Object}
+     */
+    getAlias(options) {
+        const alias = {};
+
+        Object.keys(options).forEach(option => alias[option[0]] = option);
+
+        return alias;
     }
 
     /**
@@ -78,7 +95,7 @@ class CLI extends EventEmitter {
      */
     result(message) {
         this.write(typeof message === 'string' ? message : message.join('\r\n'));
-        this.readline.prompt();
+        setImmediate(this.close);
     }
 
     /**
@@ -96,11 +113,13 @@ class CLI extends EventEmitter {
      * @return {String}
      */
     getCommand(input) {
-        if (this.commands.has(input.trim())) {
-            return input;
+        const [ command, ...options] = input.split(' ');
+
+        if (!this.commands.has(command)) {
+            return { command: 'unknown' };
         }
 
-        return 'unknown';
+        return { command, options: minimist(options, this.commands.get(command)) };
     }
 
     /**
@@ -118,7 +137,9 @@ class CLI extends EventEmitter {
      * @param {String} line
      */
     onLine(line) {
-        this.emit(this.getCommand(line) || 'unknown');
+        const { command, options } = this.getCommand(line);
+
+        this.emit(command || 'unknown', options);
     }
 
     /**
