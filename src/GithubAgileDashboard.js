@@ -25,6 +25,7 @@ class GithubAgileDashboard {
         this.backlogCommand = this.backlogCommand.bind(this);
         this.reviewCommand = this.reviewCommand.bind(this);
         this.changelogCommand = this.changelogCommand.bind(this);
+        this.estimateCommand = this.estimateCommand.bind(this);
 
         this.loader.load();
     }
@@ -41,6 +42,7 @@ class GithubAgileDashboard {
             this.cli.on('backlog', this.backlogCommand);
             this.cli.on('review', this.reviewCommand);
             this.cli.on('changelog', this.changelogCommand);
+            this.cli.on('estimate', this.estimateCommand);
             this.cli.on('unknown', this.helpCommand);
             this.cli.on('refresh', this.loader.load);
             this.cli.on('reset', this.loader.reset);
@@ -114,6 +116,13 @@ class GithubAgileDashboard {
      */
     changelogCommand() {
         this.cli.result(this.project.getCurrentMilestone().displayChangelog());
+    }
+
+    /**
+     * Show stories that are missing estimation
+     */
+    estimateCommand() {
+        this.cli.result(this.project.getIssuesMissingEstimation().map(issue => issue.display()));
     }
 
     /**

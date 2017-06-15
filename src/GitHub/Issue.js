@@ -1,4 +1,5 @@
 const DateUtil = require('../Util/DateUtil');
+const { cyan, yellow } = require('../Util/colors');
 
 class Issue {
     /**
@@ -7,7 +8,7 @@ class Issue {
      * @param {Object} data
      */
     static create(data) {
-        const { id, number, state, labels, milestone, created_at, closed_at } = data;
+        const { id, number, body, state, labels, milestone, created_at, closed_at } = data;
         const { title, points } = this.parseTitle(data.title);
 
         return new this(
@@ -15,10 +16,11 @@ class Issue {
             parseInt(number, 10),
             title.trim(),
             points,
+            body,
             state,
             labels,
             milestone,
-            new Date(created_at),
+            DateUtil.day(created_at),
             closed_at ? DateUtil.day(closed_at) : null
         );
     }
@@ -34,7 +36,7 @@ class Issue {
         const result = this.titleParser.exec(title);
 
         if (!result) {
-            return { title, points: 0 };
+            return { title, points: null };
         }
 
         return {
@@ -68,11 +70,12 @@ class Issue {
         return a.points < b.points ? 1 : -1;
     }
 
-    constructor(id, number, title, points, state, labels, milestone, createdAt, closedAt) {
+    constructor(id, number, title, points, body, state, labels, milestone, createdAt, closedAt) {
         this.id = id;
         this.number = number;
         this.title = title;
         this.points = points;
+        this.body = body;
         this.state = state;
         this.labels = labels;
         this.milestone = milestone;
@@ -86,7 +89,7 @@ class Issue {
     }
 
     static sum(sum, issue) {
-        return sum + issue.points;
+        return sum + (issue.points || 0);
     }
 
     get status() {
@@ -99,6 +102,26 @@ class Issue {
         }
 
         return 'todo';
+    }
+
+    /**
+     * Is story estimated?
+     *
+     * @return {Boolean}
+     */
+    isEstimated() {
+        return this.points !== null;
+    }
+
+    /**
+     * Display an issue
+     *
+     * @return {String}
+     */
+    display(full = false) {
+        const { number, title, body, createdAt } = this;
+
+        return `${cyan(number)} ${title} ${yellow(createdAt.toLocaleDateString())}${full ? '\r\n' + body : ''}`;
     }
 }
 

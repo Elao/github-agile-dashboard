@@ -65,6 +65,16 @@ class Project {
     }
 
     /**
+     * Get Issues that are missing an estimation
+     *
+     * @return {Array}
+     */
+    getIssuesMissingEstimation() {
+        return Array.from(this.issues.values())
+            .filter(issue => issue.status === 'todo' && !issue.isEstimated());
+    }
+
+    /**
      * Load issues and PR from Github API
      *
      * @param {Array} issues
