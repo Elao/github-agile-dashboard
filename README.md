@@ -10,7 +10,7 @@
 
 ### GitHub authentication
 
-As [recommended by GitHub](https://github.com/blog/180-local-github-config), Gad rely on `github.user` and `github.token` variables in your git config to authenticate you on GitHub API. Follow this three steps and you're good to go:
+As [recommended by GitHub](https://github.com/blog/180-local-github-config), Gad relies on `github.user` and `github.token` variables in your git config to authenticate you on GitHub API. Follow these three steps and you're good to go:
 
 1. Set up your GitHub username in your git config:
 
@@ -59,7 +59,7 @@ E.g.: `gad -o Elao -r symfony-standard -u Tom32i -p MyGitHubPersonalAccessToken`
 
 For performance purpose, Gad keeps a little cache file for each repository.
 
-By default, it's located in `~/.gad/cache` but you can specify a different path with the `cacheDir`option:
+By default, it's located in `~/.gad/cache` but you can specify a different path with the `cacheDir` option:
 
     gad -c ./cache
 
