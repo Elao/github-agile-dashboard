@@ -39,7 +39,7 @@ class PullRequest {
      * @param {String} state
      * @param {User} user
      * @param {Label[]} labels
-     * @param {Array} issues
+     * @param {Issue[]} issues
      * @param {Date} createdAt
      */
     constructor(id, number, title, state, user, labels, issues = [], reviews = [], createdAt) {

@@ -3,6 +3,7 @@ const PullRequest = require('./PullRequest');
 const Milestone = require('./Milestone');
 const Label = require('./Label');
 const Review = require('./Review');
+const DateUtil = require('../Util/DateUtil');
 
 class Project {
     /**
@@ -29,7 +30,7 @@ class Project {
      *
      * @return {Milestone}
      */
-    getCurrentMilestone(date = Date.now()) {
+    getCurrentMilestone(date = DateUtil.day()) {
         return this.getSprints().find(milestone => milestone.isCurrent(date));
     }
 
@@ -56,7 +57,7 @@ class Project {
      *
      * @param {String} user
      *
-     * @return {Array}
+     * @return {PullRequest[]}
      */
     getPullRequestsAwaitingReview(user) {
         return Array.from(this.pullRequests.values())

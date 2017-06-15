@@ -14,6 +14,14 @@ class Milestone {
         return new this(parseInt(id, 10), title.trim(), description, state, DateUtil.day(created_at), due_on ? DateUtil.day(due_on) : null);
     }
 
+    /**
+     * Sort milestones by date (old first)
+     *
+     * @param {Milestone} a
+     * @param {Milestone} b
+     *
+     * @return {Number}
+     */
     static sort(a, b) {
         if (a.dueOn < b.dueOn) {
             return -1;
@@ -82,6 +90,13 @@ class Milestone {
         return Math.abs(Math.ceil((this.dueOn - this.startAt) / (1000 * 60 * 60 * 24)));
     }
 
+    /**
+     * Get all issues that match the given status
+     *
+     * @param {String} status
+     *
+     * @return {Issues[]}
+     */
     getIssueByStatus(status) {
         return this.issues.filter(issue => issue.status === status);
     }
@@ -97,10 +112,10 @@ class Milestone {
      *
      * @return {Boolean}
      */
-    isCurrent(date = Date.now()) {
+    isCurrent(date = DateUtil.day()) {
         return this.state === 'open'
             && this.dueOn
-            && this.dueOn.getTime() >= date;
+            && this.dueOn >= date;
     }
 
     /**
@@ -158,8 +173,11 @@ class Milestone {
      * @return {Array}
      */
     displayChangelog() {
-        return ['## Changelog:']
-            .concat(this.issues.sort(Issue.sortByPoint).map(issue => `- ${issue.title}`));
+        return ['## Changelog:'].concat(
+            this.getIssueByStatus('done')
+                .sort(Issue.sortByPoint)
+                .map(issue => `- ${issue.title}`)
+        );
     }
 
 }
