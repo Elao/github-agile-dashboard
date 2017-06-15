@@ -13,7 +13,7 @@ const { owner, repo, user, password, cacheDir, _: commands} = require('minimist'
         repo: defaultRepo,
         user: lookup('git config --global github.user') || process.env.USER,
         password: lookup('git config --global github.token'),
-        cacheDir: `${__dirname}/cache`
+        cacheDir: `${homedir()}/.gad/cache`
     },
     alias: {
         o: 'owner',
