@@ -19,7 +19,7 @@ class PullRequest {
             labels,
             issues,
             reviews,
-            DateUtil.day(new Date(created_at))
+            DateUtil.day(created_at)
         );
     }
 

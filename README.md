@@ -43,6 +43,7 @@ In your projet repository, just enter `gad`.
 | __backlog__ | Show the state of the backlog |
 | __review__ | Display PullRequest that are awaiting your review |
 | __changelog__ | Generate a markdown changelog of the current sprint |
+| __estimate__ | Show stories that are missing estimation |
 | __status__ | Show the status of the repository |
 | __help__ | Show list of commands |
 | __exit__ | Quit the dashboard |
