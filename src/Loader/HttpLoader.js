@@ -20,7 +20,6 @@ class HttpLoader {
         this.api = new GitHubApi({
             headers: { 'user-agent': 'GitHub-Agile-Dashboard' },
             timeout: 5000,
-            //followRedirects: false, // default: true; there's currently an issue with non-get redirects, so allow ability to disable follow-redirects
         });
 
         this.load = this.load.bind(this);

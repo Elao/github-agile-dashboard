@@ -8,18 +8,19 @@
 
 ## Configuration
 
-### GitHub Access Token
+### GitHub authentication
 
-[Generate](https://github.com/settings/tokens) a [GitHub personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) with the following access rights: `repo` and `user`.
-Edit your bash file with `sudo vim ~/.bashrc` and export the generated token as below:
+As [recommended by GitHub](https://github.com/blog/180-local-github-config), Gad rely on `github.user` and `github.token` variables in your git config to authenticate you on GitHub API. Follow this three steps and you're good to go:
 
-    export GITHUB_PERSONAL_TOKEN=MyGitHubPersonalAccessToken
-
-### GitHub username
-
-If not already done, set up your GitHub username in your git config:
+1. Set up your GitHub username in your git config:
 
     git config --global github.user "Tom32i"
+
+2. [Generate](https://github.com/settings/tokens) a [GitHub personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) with the __following access rights__: `repo` and `user`.
+
+3. Set up your GitHub token in your git config:
+
+    git config --global github.token MyGitHubPersonalAccessToken
 
 ## Usage
 
