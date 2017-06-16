@@ -83,7 +83,7 @@ class Milestone {
     }
 
     get startAt() {
-        return this.previous ? this.previous.dueOn : this.createdAt;
+        return this.previous ? DateUtil.day(this.previous.dueOn, 1) : this.createdAt;
     }
 
     get days() {
