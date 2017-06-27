@@ -13,7 +13,7 @@ class GithubAgileDashboard {
      * @param {String} command
      */
     constructor(owner, repo, username, password, cacheDir, command = 'status') {
-        this.cli = new CLI('gad> ', [command]);
+        this.cli = new CLI('gad> ', command.split('&&'));
         this.loader = new HttpLoader(this.setProject.bind(this), owner, repo, username.trim(), password, cacheDir);
         this.user = username.trim();
         this.project = null;
@@ -35,7 +35,6 @@ class GithubAgileDashboard {
      */
     onInit() {
         if (!this.cli.ready) {
-            this.cli.on('help', this.helpCommand);
             this.cli.on('status', this.statusCommand);
             this.cli.on('sprint', this.sprintCommand, { sprint: 0 });
             this.cli.on('sprints', this.sprintsCommand, { limit: null });
@@ -76,7 +75,7 @@ class GithubAgileDashboard {
     backlogCommand() {
         const milestones = this.project.getBacklogs();
 
-        this.cli.result(milestones.map(milestone => milestone.display()));
+        this.cli.result(milestones.map(milestone => '  ' + milestone.display()));
     }
 
     /**
@@ -116,8 +115,8 @@ class GithubAgileDashboard {
         }
 
         this.cli.result(
-            [`🔍  ${green(length)} pull requests awaiting your review:`]
-            .concat(pullRequests.map(pullRequest => pullRequest.display()))
+            [`🔍  ${green(length)} pull request(s) awaiting your review:`]
+            .concat(pullRequests.map(pullRequest => '  ' + pullRequest.display()))
             .join('\r\n')
         );
     }
@@ -126,14 +125,25 @@ class GithubAgileDashboard {
      * Show stories that are missing estimation
      */
     estimateCommand() {
-        this.cli.result(this.project.getIssuesMissingEstimation().map(issue => issue.display()));
+        const issues = this.project.getIssuesMissingEstimation();
+        const { length } = issues;
+
+        if (length === 0) {
+            return this.cli.result('Nothing to estimate. Good job! 👍');
+        }
+
+        this.cli.result(
+            [`🔍  ${green(length)} issue(s) awaiting estimation:`]
+            .concat(issues.map(issue => '  ' + issue.display()))
+            .join('\r\n')
+        );
     }
 
     /**
      * Display help
      */
     helpCommand() {
-        this.cli.result(`Available commands: ${Array.from(this.cli.commands).join(', ')}`);
+        this.cli.result(`Available commands: ${Array.from(this.cli.commands.keys()).join(', ')}`);
     }
 }
 

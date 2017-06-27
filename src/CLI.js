@@ -76,7 +76,8 @@ class CLI extends EventEmitter {
             let line;
 
             while (line = this.commandStack.shift()) {
-                this.readline.write(`${line}\r\n`);
+                this.readline.prompt();
+                this.readline.write(`${line.trim()}\r\n`);
             }
         }
     }
@@ -94,7 +95,7 @@ class CLI extends EventEmitter {
      * Display command result
      */
     result(message) {
-        this.write(typeof message === 'string' ? message : message.join('\r\n'));
+        this.write('\r\n' + (typeof message === 'string' ? message : message.join('\r\n')) + '\r\n');
         setImmediate(this.close);
     }
 
