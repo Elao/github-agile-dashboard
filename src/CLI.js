@@ -1,5 +1,6 @@
 const EventEmitter = require('events');
 const Readline = require('readline');
+const minimist = require('minimist');
 
 class CLI extends EventEmitter {
     /**
@@ -9,14 +10,14 @@ class CLI extends EventEmitter {
 
     /**
      * @param {String} prompt
-     * @param {Array} commandStack command stack
+     * @param {Array} commandStack Command stack
      */
     constructor(prompt = '', commandStack = []) {
         super();
 
         const { stdin, stdout } = process;
 
-        this.commands = new Set();
+        this.commands = new Map();
         this.readline = Readline.createInterface({ input: stdin, output: stdout, prompt });
         this.commandStack = commandStack;
         this.ready = false;
@@ -37,13 +38,29 @@ class CLI extends EventEmitter {
      *
      * @param {String} name
      * @param {Function} callback
+     * @param {Object} options
      */
-    on(name, callback) {
+    on(name, callback, options = {}) {
         super.on(name, callback);
 
         if (CLI.RESERVED.indexOf(name) < 0) {
-            this.commands.add(name);
+            this.commands.set(name, { default: options, alias: this.getAlias(options) });
         }
+    }
+
+    /**
+     * Create alias automatically
+     *
+     * @param {Object} options
+     *
+     * @return {Object}
+     */
+    getAlias(options) {
+        const alias = {};
+
+        Object.keys(options).forEach(option => alias[option[0]] = option);
+
+        return alias;
     }
 
     /**
@@ -59,7 +76,8 @@ class CLI extends EventEmitter {
             let line;
 
             while (line = this.commandStack.shift()) {
-                this.readline.write(`${line}\r\n`);
+                this.readline.prompt();
+                this.readline.write(`${line.trim()}\r\n`);
             }
         }
     }
@@ -77,8 +95,8 @@ class CLI extends EventEmitter {
      * Display command result
      */
     result(message) {
-        this.write(typeof message === 'string' ? message : message.join('\r\n'));
-        this.readline.prompt();
+        this.write('\r\n' + (typeof message === 'string' ? message : message.join('\r\n')) + '\r\n');
+        setImmediate(this.close);
     }
 
     /**
@@ -96,11 +114,13 @@ class CLI extends EventEmitter {
      * @return {String}
      */
     getCommand(input) {
-        if (this.commands.has(input.trim())) {
-            return input;
+        const [ command, ...options] = input.split(' ');
+
+        if (!this.commands.has(command)) {
+            return { command: 'unknown' };
         }
 
-        return 'unknown';
+        return { command, options: minimist(options, this.commands.get(command)) };
     }
 
     /**
@@ -118,7 +138,9 @@ class CLI extends EventEmitter {
      * @param {String} line
      */
     onLine(line) {
-        this.emit(this.getCommand(line) || 'unknown');
+        const { command, options } = this.getCommand(line);
+
+        this.emit(command || 'unknown', options);
     }
 
     /**

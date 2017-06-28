@@ -10,10 +10,10 @@ class GithubAgileDashboard {
      * @param {String} username
      * @param {String} password
      * @param {String} cacheDir
-     * @param {Array} commands
+     * @param {String} command
      */
-    constructor(owner, repo, username, password, cacheDir, commands = ['status']) {
-        this.cli = new CLI('gad> ', commands);
+    constructor(owner, repo, username, password, cacheDir, command = 'status') {
+        this.cli = new CLI('gad> ', [command]);
         this.loader = new HttpLoader(this.setProject.bind(this), owner, repo, username.trim(), password, cacheDir);
         this.user = username.trim();
         this.project = null;
@@ -35,13 +35,12 @@ class GithubAgileDashboard {
      */
     onInit() {
         if (!this.cli.ready) {
-            this.cli.on('help', this.helpCommand);
             this.cli.on('status', this.statusCommand);
-            this.cli.on('sprint', this.sprintCommand);
-            this.cli.on('sprints', this.sprintsCommand);
+            this.cli.on('sprint', this.sprintCommand, { sprint: 0 });
+            this.cli.on('sprints', this.sprintsCommand, { limit: null });
             this.cli.on('backlog', this.backlogCommand);
             this.cli.on('review', this.reviewCommand);
-            this.cli.on('changelog', this.changelogCommand);
+            this.cli.on('changelog', this.changelogCommand, { sprint: 0, all: false });
             this.cli.on('estimate', this.estimateCommand);
             this.cli.on('unknown', this.helpCommand);
             this.cli.on('refresh', this.loader.load);
@@ -76,22 +75,31 @@ class GithubAgileDashboard {
     backlogCommand() {
         const milestones = this.project.getBacklogs();
 
-        this.cli.result(milestones.map(milestone => milestone.display()));
+        this.cli.result(milestones.map(milestone => '  ' + milestone.display()));
     }
 
     /**
      * Show the state of the current sprint
      */
-    sprintCommand() {
-        this.cli.result(this.project.getCurrentMilestone().display());
+    sprintCommand(options) {
+        const { sprint } = options;
+        this.cli.result(this.project.getSprint(sprint).display());
+    }
+
+    /**
+     * Generate a markdown changelog of the current sprint
+     */
+    changelogCommand(options) {
+        const { all, sprint } = options;
+        this.cli.result(this.project.getSprint(sprint).displayChangelog(all));
     }
 
     /**
      * Show the state of all sprints
      */
-    sprintsCommand() {
-        const milestones = this.project.getSprints();
-
+    sprintsCommand(options) {
+        const { limit } = options;
+        const milestones = this.project.getSprints().reverse().slice(0, limit || undefined);
         this.cli.result(milestones.map(milestone => milestone.display()));
     }
 
@@ -106,30 +114,36 @@ class GithubAgileDashboard {
             return this.cli.result('Nothing to review. Good job! 👍');
         }
 
-        this.cli.result([`🔍  ${green(length)} pull requests awaiting your review:`]
-            .concat(pullRequests.map(pullRequest => pullRequest.display()))
-            .join('\r\n'));
-    }
-
-    /**
-     * Generate a markdown changelog of the current sprint
-     */
-    changelogCommand() {
-        this.cli.result(this.project.getCurrentMilestone().displayChangelog());
+        this.cli.result(
+            [`🔍  ${green(length)} pull request(s) awaiting your review:`]
+            .concat(pullRequests.map(pullRequest => '  ' + pullRequest.display()))
+            .join('\r\n')
+        );
     }
 
     /**
      * Show stories that are missing estimation
      */
     estimateCommand() {
-        this.cli.result(this.project.getIssuesMissingEstimation().map(issue => issue.display()));
+        const issues = this.project.getIssuesMissingEstimation();
+        const { length } = issues;
+
+        if (length === 0) {
+            return this.cli.result('Nothing to estimate. Good job! 👍');
+        }
+
+        this.cli.result(
+            [`🔍  ${green(length)} issue(s) awaiting estimation:`]
+            .concat(issues.map(issue => '  ' + issue.display()))
+            .join('\r\n')
+        );
     }
 
     /**
      * Display help
      */
     helpCommand() {
-        this.cli.result(`Available commands: ${Array.from(this.cli.commands).join(', ')}`);
+        this.cli.result(`Available commands: ${Array.from(this.cli.commands.keys()).join(', ')}`);
     }
 }
 

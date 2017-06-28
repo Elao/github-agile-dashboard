@@ -24,14 +24,36 @@ class Project {
     }
 
     /**
-     * Get current milestone
+     * Get sprint by index
      *
+     * @param {Number} index If null: current sprint. If negative: previous sprint from current. If position: number of the sprint.
      * @param {Date} date
      *
      * @return {Milestone}
      */
-    getCurrentMilestone(date = DateUtil.day()) {
-        return this.getSprints().find(milestone => milestone.isCurrent(date));
+    getSprint(number = null, date = DateUtil.day()) {
+        const sprints = this.getSprints();
+
+        if (!number) {
+            return sprints.find(milestone => milestone.isCurrent(date));
+        }
+
+        if (number > 0) {
+            if (typeof sprints[number - 1] === 'undefined') {
+                throw new Error(`No sprint ${number}: only ${sprints.length} sprints found.`);
+            }
+
+            return sprints[number - 1];
+        } else {
+            const date = DateUtil.day();
+            const current = sprints.findIndex(milestone => milestone.isCurrent(date));
+
+            if (typeof sprints[current + number] === 'undefined') {
+                throw new Error(`No sprint ${number}.`);
+            }
+
+            return sprints[current + number];
+        }
     }
 
     /**
@@ -40,7 +62,7 @@ class Project {
      * @return {Milestone[]}
      */
     getSprints() {
-        return this.milestones.sort(Milestone.sort).filter(milestone => !milestone.isBacklog());
+        return this.milestones.filter(milestone => !milestone.isBacklog());
     }
 
     /**
@@ -82,6 +104,7 @@ class Project {
     load(issues) {
         issues.filter(data => typeof data.pull_request === 'undefined').forEach(this.loadIssue);
         issues.filter(data => typeof data.pull_request !== 'undefined').forEach(this.loadPullRequest);
+        this.milestones.sort(Milestone.sort);
         this.getSprints().forEach((milestone, index, sprints) => milestone.previous = sprints[index - 1] || null);
     }
 

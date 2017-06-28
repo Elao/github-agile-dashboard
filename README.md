@@ -35,19 +35,19 @@ As [recommended by GitHub](https://github.com/blog/180-local-github-config), Gad
 
 ### Commands
 
-In your projet repository, just enter `gad`.
+In your projet repository, just enter `gad [command] (options)`.
 
-| Command | Description |
-|---|---|
-| __sprint__ | Show the state of the current sprint |
-| __sprints__ | Show the state of all sprints |
-| __backlog__ | Show the state of the backlog |
-| __review__ | Display PullRequest that are awaiting your review |
-| __changelog__ | Generate a markdown changelog of the current sprint |
-| __estimate__ | Show stories that are missing estimation |
-| __status__ | Show the status of the repository |
-| __help__ | Show list of commands |
-| __exit__ | Quit the dashboard |
+| Command | Description | Options |
+|---|---|---|
+| __sprint__ | Show the state of the current sprint | __sprint__ `-s=-1` Show the previous sprint |
+| __sprints__ | Show the state of all sprints | __limit__ `-l=2` limit the number of sprint to display |
+| __backlog__ | Show the state of the backlog | |
+| __review__ | Display PullRequest that are awaiting your review | |
+| __changelog__ | Generate a markdown changelog of the current sprint | __all__ `--all` include open issues in the changelog. __sprint__ `-s=-2` Show the changelog from two sprints ago |
+| __estimate__ | Show stories that are missing estimation | |
+| __status__ | Show the status of the repository | |
+| __help__ | Show list of commands | |
+| __exit__ | Quit the dashboard | |
 
 ### Options
 

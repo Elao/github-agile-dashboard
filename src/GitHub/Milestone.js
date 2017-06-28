@@ -1,6 +1,7 @@
 const Issue = require('./Issue');
-const DateUtil = require('../Util/DateUtil');
 const BurnDownChart = require('../Display/BurnDownChart');
+const DateUtil = require('../Util/DateUtil');
+const { green, yellow } = require('../Util/colors');
 
 class Milestone {
     /**
@@ -144,7 +145,16 @@ class Milestone {
     displaySprint() {
         const { title, length, done, todo, inProgress, readyToReview, progress, points } = this;
 
-        return `${title}  ・ 📉  ${(progress * 100).toFixed(2)}% ・ 📫  ${todo}pts ・ 🚧  ${inProgress}pts ・ 🔍  ${readyToReview}pts ・ ✅  ${done}pts ・  (${length} stories ・ ${points}pts)`;
+        return [
+            title,
+            `${green(length)} stories`,
+            `${yellow(points)} points`,
+            `📉  ${(progress * 100).toFixed(2)}%`,
+            `📫  ${todo}pts`,
+            `🚧  ${inProgress}pts`,
+            `🔍  ${readyToReview}pts`,
+            `✅  ${done}pts`,
+        ].join(' ・ ');
     }
 
     /**
@@ -155,7 +165,7 @@ class Milestone {
     displayBacklog() {
         const { title, length, points } = this;
 
-        return `${title}  ・ 📇  ${length} stories ・ ${points} points`;
+        return `${title} ・ 📇  ${green(length)} stories ・ ${yellow(points)} points`;
     }
 
     /**
@@ -170,14 +180,18 @@ class Milestone {
     /**
      * Returns a changelog of the sprint
      *
+     * @param {Boolean} all Display all issue (and not just those that are done)
+     *
      * @return {Array}
      */
-    displayChangelog() {
-        return ['## Changelog:'].concat(
-            this.getIssueByStatus('done')
-                .sort(Issue.sortByPoint)
-                .map(issue => `- ${issue.title}`)
-        );
+    displayChangelog(all = false) {
+        const issues = all ? this.issues : this.getIssueByStatus('done');
+
+        return [`# ${this.title}`, '## Changelog '].concat(
+            issues
+            .sort(Issue.sortByPoint)
+            .map(issue => `- ${issue.title}`)
+        ).join('\r\n');
     }
 
 }
