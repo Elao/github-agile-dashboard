@@ -49,10 +49,6 @@ In your projet repository, just enter `gad [command] (options)`.
 | __help__ | Show list of commands | |
 | __exit__ | Quit the dashboard | |
 
-You can run several commands with `&&`:
-
-    gad "sprint && review"
-
 ### Options
 
 You can manually specify any of the options on the fly:

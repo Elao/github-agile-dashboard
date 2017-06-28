@@ -13,7 +13,7 @@ class GithubAgileDashboard {
      * @param {String} command
      */
     constructor(owner, repo, username, password, cacheDir, command = 'status') {
-        this.cli = new CLI('gad> ', command.split('&&'));
+        this.cli = new CLI('gad> ', [command]);
         this.loader = new HttpLoader(this.setProject.bind(this), owner, repo, username.trim(), password, cacheDir);
         this.user = username.trim();
         this.project = null;

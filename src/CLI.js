@@ -10,7 +10,7 @@ class CLI extends EventEmitter {
 
     /**
      * @param {String} prompt
-     * @param {Array} commandStack command stack
+     * @param {Array} commandStack Command stack
      */
     constructor(prompt = '', commandStack = []) {
         super();
