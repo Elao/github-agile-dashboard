@@ -1,6 +1,6 @@
 {
   "name": "@elao/github-agile-dashboard",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Github Agile Dashboard",
   "keywords": ["GitHub", "Agile", "Dashboard", "Scrum", "Burndown"],
   "license": "MIT",
