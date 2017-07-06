@@ -29,7 +29,10 @@ class BurnDownChart {
             if (this.workDays.includes(day.getDay())) {
                 burnDown.set(
                     `${prefix(day.getDate())}/${prefix(day.getMonth())}`,
-                    day <= now ? milestone.getTodoAt(day) : null
+                    {
+                        points: day <= now ? milestone.getTodoAt(day) : null,
+                        progress: day <= now ? milestone.getInProgressAt(day) : null,
+                    }
                 );
             }
         }
@@ -49,16 +52,17 @@ class BurnDownChart {
         ];
         let lastPoints = null;
 
-        burnDown.forEach((points, day) => {
+        burnDown.forEach(({ points, progress }, day) => {
             const index = lines.length - 2;
             const showLabel = index % 2 === 0;
             const label = gutter(showLabel ? day : '', ' ', labelLength);
             const border = showLabel ? '╢' : '║';
             const goal = Math.round(maxPoints - (index + 1) * pointsPerDay);
             const good = Math.min(points, goal);
-            const missing = points - good;
-            const content = green('🀫'.repeat(dayWidth * good)) + red('🀫'.repeat(dayWidth * missing));
-            const note = points && lastPoints !== points ? ' ‣ ' + yellow(points.toString()) : '';
+            const pending =  Math.min(progress, points - good);
+            const missing =  Math.max(points - good - pending, 0);
+            const content = green('🀫'.repeat(dayWidth * good)) + red('🀫'.repeat(dayWidth * missing)) + yellow('🀫'.repeat(dayWidth * pending));
+            const note = points && lastPoints !== points ? ' ‣ ' + cyan(points.toString()) : '';
             lastPoints = points;
             lines.push(label + ' ' + border + content + note);
         });
