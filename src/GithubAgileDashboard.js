@@ -5,7 +5,7 @@ const { green } = require('./Util/colors');
 
 class GithubAgileDashboard {
     /**
-     * @param {Sring} owner
+     * @param {String} owner
      * @param {String} repo
      * @param {String} username
      * @param {String} password
