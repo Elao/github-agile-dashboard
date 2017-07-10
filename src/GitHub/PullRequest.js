@@ -74,6 +74,10 @@ class PullRequest {
         return this.state === 'open' ? 'in-progress' : 'done';
     }
 
+    isOpenAt(date) {
+        return this.createdAt <= date;
+    }
+
     /**
      * Display the Pull Request
      *

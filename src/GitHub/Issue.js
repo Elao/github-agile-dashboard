@@ -104,6 +104,10 @@ class Issue {
         return 'todo';
     }
 
+    isOpenAt(date) {
+        return !this.closedAt || this.closedAt > date;
+    }
+
     /**
      * Is story estimated?
      *

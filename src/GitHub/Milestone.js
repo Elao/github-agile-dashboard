@@ -102,8 +102,28 @@ class Milestone {
         return this.issues.filter(issue => issue.status === status);
     }
 
+    /**
+     * Get number of points that are not done at the given date
+     *
+     * @param {Date} date
+     *
+     * @return {Number}
+     */
     getTodoAt(date) {
-        return this.issues.filter(issue => !issue.closedAt || issue.closedAt > date).reduce(Issue.sum, 0);
+        return this.issues.filter(issue => issue.isOpenAt(date)).reduce(Issue.sum, 0);
+    }
+
+    /**
+     * Get number of points that are "In progress" at the given date
+     *
+     * @param {Date} date
+     *
+     * @return {Number}
+     */
+    getInProgressAt(date) {
+        return this.issues
+            .filter(issue => issue.isOpenAt(date) && issue.pullRequest && issue.pullRequest.isOpenAt(date))
+            .reduce(Issue.sum, 0);
     }
 
     /**
