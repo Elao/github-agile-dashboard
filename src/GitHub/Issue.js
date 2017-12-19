@@ -125,7 +125,7 @@ class Issue {
      * @return {Boolean}
      */
     hasLabel(value) {
-        return this.labels.some(label => label.name === value);
+        return this.labels.some(label => label.name.includes(value));
     }
 
     /**
