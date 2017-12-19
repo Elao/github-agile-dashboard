@@ -119,8 +119,8 @@ class GithubAgileDashboard {
 
         this.cli.result(
             [`🔍  ${green(length)} pull request(s) awaiting your review:`]
-            .concat(pullRequests.map(pullRequest => '  ' + pullRequest.display()))
-            .join('\r\n')
+                .concat(pullRequests.map(pullRequest => '  ' + pullRequest.display()))
+                .join('\r\n')
         );
     }
 
@@ -137,8 +137,8 @@ class GithubAgileDashboard {
 
         this.cli.result(
             [`🔍  ${green(length)} issue(s) awaiting estimation:`]
-            .concat(issues.map(issue => '  ' + issue.display()))
-            .join('\r\n')
+                .concat(issues.map(issue => '  ' + issue.display()))
+                .join('\r\n')
         );
     }
 
@@ -150,14 +150,14 @@ class GithubAgileDashboard {
         const { length } = issues;
 
         if (length === 0) {
-            return this.cli.result(`No issue matching label "${label}".`);
+            return this.cli.result('No issue matching the given filter.');
         }
 
         const points = issues.reduce(Issue.sum, 0);
 
         this.cli.result(
             [`= ${green(points)} pts in ${yellow(length)} issue(s).`]
-            .join('\r\n')
+                .join('\r\n')
         );
     }
 

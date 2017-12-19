@@ -78,3 +78,6 @@ By default, it's located in `~/.gad/cache` but you can specify a different path 
 
     node gad.js -o [organisation|owner] -r [repo] -u [username] -p [password|token]
 
+## Coding style
+
+    npm run lint

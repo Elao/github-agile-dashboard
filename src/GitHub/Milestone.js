@@ -209,8 +209,8 @@ class Milestone {
 
         return [`# ${this.title}`, '## Changelog '].concat(
             issues
-            .sort(Issue.sortByPoint)
-            .map(issue => `- ${issue.title}`)
+                .sort(Issue.sortByPoint)
+                .map(issue => `- ${issue.title}`)
         ).join('\r\n');
     }
 

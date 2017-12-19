@@ -25,10 +25,14 @@
   },
   "homepage": "https://github.com/Elao/github-agile-dashboard#readme",
   "scripts": {
+    "lint": "eslint gad.js src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "github": "^9.2.0",
     "minimist": "^1.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.13.1"
   }
 }

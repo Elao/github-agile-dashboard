@@ -75,7 +75,7 @@ class CLI extends EventEmitter {
 
             let line;
 
-            while (line = this.commandStack.shift()) {
+            while ((line = this.commandStack.shift()) !== undefined) {
                 this.readline.prompt();
                 this.readline.write(`${line.trim()}\r\n`);
             }

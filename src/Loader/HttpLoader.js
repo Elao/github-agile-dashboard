@@ -43,7 +43,7 @@ class HttpLoader {
      * @param {Date} since
      */
     load(state = 'all', per_page = 100, since = this.cache.lastModified) {
-        console.info(`⏳  Fetching issues...`);
+        console.info('⏳  Fetching issues...');
 
         this.data = this.cache.load();
 
