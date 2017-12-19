@@ -118,6 +118,17 @@ class Issue {
     }
 
     /**
+     * Does the story match the given label
+     *
+     * @param {String} value
+     *
+     * @return {Boolean}
+     */
+    hasLabel(value) {
+        return this.labels.some(label => label.name === value);
+    }
+
+    /**
      * Display an issue
      *
      * @return {String}

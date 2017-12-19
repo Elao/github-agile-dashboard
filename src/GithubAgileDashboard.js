@@ -1,7 +1,8 @@
 const CLI = require('./CLI');
 const Project = require('./GitHub/Project');
+const Issue = require('./GitHub/Issue');
 const HttpLoader = require('./Loader/HttpLoader');
-const { green } = require('./Util/colors');
+const { green, yellow } = require('./Util/colors');
 
 class GithubAgileDashboard {
     /**
@@ -26,6 +27,7 @@ class GithubAgileDashboard {
         this.reviewCommand = this.reviewCommand.bind(this);
         this.changelogCommand = this.changelogCommand.bind(this);
         this.estimateCommand = this.estimateCommand.bind(this);
+        this.sumCommand = this.sumCommand.bind(this);
 
         this.loader.load();
     }
@@ -42,6 +44,7 @@ class GithubAgileDashboard {
             this.cli.on('review', this.reviewCommand);
             this.cli.on('changelog', this.changelogCommand, { sprint: 0, all: false });
             this.cli.on('estimate', this.estimateCommand);
+            this.cli.on('sum', this.sumCommand, { label: null });
             this.cli.on('unknown', this.helpCommand);
             this.cli.on('refresh', this.loader.load);
             this.cli.on('reset', this.loader.reset);
@@ -135,6 +138,25 @@ class GithubAgileDashboard {
         this.cli.result(
             [`🔍  ${green(length)} issue(s) awaiting estimation:`]
             .concat(issues.map(issue => '  ' + issue.display()))
+            .join('\r\n')
+        );
+    }
+
+    /**
+     * Calculate the sum of the stories matching the given filters
+     */
+    sumCommand(options) {
+        const issues = this.project.getIssues(options);
+        const { length } = issues;
+
+        if (length === 0) {
+            return this.cli.result(`No issue matching label "${label}".`);
+        }
+
+        const points = issues.reduce(Issue.sum, 0);
+
+        this.cli.result(
+            [`= ${green(points)} pts in ${yellow(length)} issue(s).`]
             .join('\r\n')
         );
     }

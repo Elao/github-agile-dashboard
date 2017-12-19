@@ -87,6 +87,24 @@ class Project {
     }
 
     /**
+     * Get all issues
+     *
+     * @param {Object} filters
+     *
+     * @return {Array}
+     */
+    getIssues(filters = {}) {
+        const { label } = filters;
+        let issues = Array.from(this.issues.values());
+
+        if (label) {
+            issues = issues.filter(issue => issue.hasLabel(label));
+        }
+
+        return issues;
+    }
+
+    /**
      * Get Issues that are missing an estimation
      *
      * @return {Array}
