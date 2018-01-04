@@ -22,11 +22,11 @@ class Label {
     }
 
     get status() {
-        switch (this.name) {
-            case 'Ready to review':
+        switch (this.name.toLowerCase()) {
+            case 'ready to review':
                 return 'ready-to-review';
 
-            case 'In Progress':
+            case 'in progress':
                 return 'in-progress';
 
             default:

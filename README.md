@@ -45,6 +45,7 @@ In your projet repository, just enter `gad [command] (options)`.
 | __review__ | Display PullRequest that are awaiting your review | |
 | __changelog__ | Generate a markdown changelog of the current sprint | __all__ `--all` include open issues in the changelog. __sprint__ `-s=-2` Show the changelog from two sprints ago |
 | __estimate__ | Show stories that are missing estimation | |
+| __sum__ | Calculate the sum of the stories matching the given filters | __label__ `--label=API` include issues with label "API" |
 | __status__ | Show the status of the repository | |
 | __help__ | Show list of commands | |
 | __exit__ | Quit the dashboard | |
@@ -77,3 +78,6 @@ By default, it's located in `~/.gad/cache` but you can specify a different path 
 
     node gad.js -o [organisation|owner] -r [repo] -u [username] -p [password|token]
 
+## Coding style
+
+    npm run lint
