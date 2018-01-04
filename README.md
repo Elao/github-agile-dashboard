@@ -81,3 +81,7 @@ By default, it's located in `~/.gad/cache` but you can specify a different path 
 ## Coding style
 
     npm run lint
+
+## Publishing on NPM
+
+    npm publish --access public
