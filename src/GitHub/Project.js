@@ -149,7 +149,15 @@ class Project {
         const issues = this.fetchIssues(data.body, data.number);
         const reviews = data.reviews ? data.reviews.map(Review.create) : [];
 
-        this.addPullRequest(PullRequest.create(Object.assign(data, { milestone, labels, issues, reviews })));
+        const pullRequest = this.addPullRequest(PullRequest.create(Object.assign(data, { milestone, labels, issues, reviews })));
+        const { title, points } = Issue.parseTitle(pullRequest.title);
+
+
+        if (points !== null) {
+            const { id, number, state, labels, createdAt } = pullRequest;
+            pullRequest.title = title;
+            this.addIssue(new Issue(id, number, title, points, data.body, state, labels, milestone, createdAt, null, pullRequest));
+        }
     }
 
     /**

@@ -70,7 +70,7 @@ class Issue {
         return a.points < b.points ? 1 : -1;
     }
 
-    constructor(id, number, title, points, body, state, labels, milestone, createdAt, closedAt) {
+    constructor(id, number, title, points, body, state, labels, milestone, createdAt, closedAt = null, pullRequest = null) {
         this.id = id;
         this.number = number;
         this.title = title;
@@ -81,7 +81,7 @@ class Issue {
         this.milestone = milestone;
         this.createdAt = createdAt;
         this.closedAt = closedAt;
-        this.pullRequest = null;
+        this.pullRequest = pullRequest;
 
         if (this.milestone) {
             this.milestone.issues.push(this);
@@ -104,6 +104,22 @@ class Issue {
         return 'todo';
     }
 
+    /**
+     * Set pull request
+     *
+     * @param {PullRequest} pullRequest
+     */
+    setPullRequest(pullRequest) {
+        this.pullRequest = pullRequest;
+    }
+
+    /**
+     * Is issue open at given date?
+     *
+     * @param {Date} date
+     *
+     * @return {Boolean}
+     */
     isOpenAt(date) {
         return !this.closedAt || this.closedAt > date;
     }
