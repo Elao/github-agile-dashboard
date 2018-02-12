@@ -56,7 +56,7 @@ class PullRequest {
         if (this.issues) {
             this.issues.forEach(issue => {
                 if (typeof issue !== 'number') {
-                    issue.pullRequest = this;
+                    issue.setPullRequest(this);
                 }
             });
         }
